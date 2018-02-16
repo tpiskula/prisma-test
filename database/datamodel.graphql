@@ -14,4 +14,10 @@ type User {
   password: String!
   name: String!
   posts: [Post!]!
+  roles: [Role!]!
+}
+
+enum Role {
+  ADMIN
+  USER
 }

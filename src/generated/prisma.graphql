@@ -21,6 +21,7 @@ type User implements Node {
   password: String!
   name: String!
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
+  roles: [Role!]
 }
 
 
@@ -259,6 +260,11 @@ type Query {
   node(id: ID!): Node
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 type Subscription {
   post(where: PostSubscriptionWhereInput): PostSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
@@ -274,6 +280,7 @@ input UserCreateInput {
   email: String!
   password: String!
   name: String!
+  roles: UserCreaterolesInput
   posts: PostCreateManyWithoutAuthorInput
 }
 
@@ -282,10 +289,15 @@ input UserCreateOneWithoutPostsInput {
   connect: UserWhereUniqueInput
 }
 
+input UserCreaterolesInput {
+  set: [Role!]
+}
+
 input UserCreateWithoutPostsInput {
   email: String!
   password: String!
   name: String!
+  roles: UserCreaterolesInput
 }
 
 type UserEdge {
@@ -313,6 +325,7 @@ type UserPreviousValues {
   email: String!
   password: String!
   name: String!
+  roles: [Role!]
 }
 
 type UserSubscriptionPayload {
@@ -336,6 +349,7 @@ input UserUpdateInput {
   email: String
   password: String
   name: String
+  roles: UserUpdaterolesInput
   posts: PostUpdateManyWithoutAuthorInput
 }
 
@@ -348,10 +362,15 @@ input UserUpdateOneWithoutPostsInput {
   upsert: UserUpsertWithoutPostsInput
 }
 
+input UserUpdaterolesInput {
+  set: [Role!]
+}
+
 input UserUpdateWithoutPostsDataInput {
   email: String
   password: String
   name: String
+  roles: UserUpdaterolesInput
 }
 
 input UserUpdateWithoutPostsInput {

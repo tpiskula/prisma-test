@@ -25,6 +25,7 @@ type User implements Node {
   password: String!
   name: String!
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
+  roles: [Role!]
 }
 
 
@@ -263,6 +264,11 @@ type Query {
   node(id: ID!): Node
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 type Subscription {
   post(where: PostSubscriptionWhereInput): PostSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
@@ -278,6 +284,7 @@ input UserCreateInput {
   email: String!
   password: String!
   name: String!
+  roles: UserCreaterolesInput
   posts: PostCreateManyWithoutAuthorInput
 }
 
@@ -286,10 +293,15 @@ input UserCreateOneWithoutPostsInput {
   connect: UserWhereUniqueInput
 }
 
+input UserCreaterolesInput {
+  set: [Role!]
+}
+
 input UserCreateWithoutPostsInput {
   email: String!
   password: String!
   name: String!
+  roles: UserCreaterolesInput
 }
 
 type UserEdge {
@@ -317,6 +329,7 @@ type UserPreviousValues {
   email: String!
   password: String!
   name: String!
+  roles: [Role!]
 }
 
 type UserSubscriptionPayload {
@@ -340,6 +353,7 @@ input UserUpdateInput {
   email: String
   password: String
   name: String
+  roles: UserUpdaterolesInput
   posts: PostUpdateManyWithoutAuthorInput
 }
 
@@ -352,10 +366,15 @@ input UserUpdateOneWithoutPostsInput {
   upsert: UserUpsertWithoutPostsInput
 }
 
+input UserUpdaterolesInput {
+  set: [Role!]
+}
+
 input UserUpdateWithoutPostsDataInput {
   email: String
   password: String
   name: String
+  roles: UserUpdaterolesInput
 }
 
 input UserUpdateWithoutPostsInput {
@@ -453,6 +472,10 @@ export type PostOrderByInput =
   'text_ASC' |
   'text_DESC'
 
+export type Role = 
+  'ADMIN' |
+  'USER'
+
 export type UserOrderByInput = 
   'id_ASC' |
   'id_DESC' |
@@ -476,6 +499,7 @@ export interface UserCreateWithoutPostsInput {
   email: String
   password: String
   name: String
+  roles?: UserCreaterolesInput
 }
 
 export interface PostWhereInput {
@@ -613,13 +637,10 @@ export interface UserWhereInput {
   posts_none?: PostWhereInput
 }
 
-export interface PostUpdateManyWithoutAuthorInput {
-  create?: PostCreateWithoutAuthorInput[] | PostCreateWithoutAuthorInput
-  connect?: PostWhereUniqueInput[] | PostWhereUniqueInput
-  disconnect?: PostWhereUniqueInput[] | PostWhereUniqueInput
-  delete?: PostWhereUniqueInput[] | PostWhereUniqueInput
-  update?: PostUpdateWithoutAuthorInput[] | PostUpdateWithoutAuthorInput
-  upsert?: PostUpsertWithoutAuthorInput[] | PostUpsertWithoutAuthorInput
+export interface UserUpsertWithoutPostsInput {
+  where: UserWhereUniqueInput
+  update: UserUpdateWithoutPostsDataInput
+  create: UserCreateWithoutPostsInput
 }
 
 export interface PostUpdateInput {
@@ -629,11 +650,8 @@ export interface PostUpdateInput {
   author?: UserUpdateOneWithoutPostsInput
 }
 
-export interface UserUpdateInput {
-  email?: String
-  password?: String
-  name?: String
-  posts?: PostUpdateManyWithoutAuthorInput
+export interface UserUpdaterolesInput {
+  set?: Role[] | Role
 }
 
 export interface PostCreateWithoutAuthorInput {
@@ -642,10 +660,57 @@ export interface PostCreateWithoutAuthorInput {
   text: String
 }
 
-export interface UserUpsertWithoutPostsInput {
+export interface UserUpdateWithoutPostsDataInput {
+  email?: String
+  password?: String
+  name?: String
+  roles?: UserUpdaterolesInput
+}
+
+export interface PostSubscriptionWhereInput {
+  AND?: PostSubscriptionWhereInput[] | PostSubscriptionWhereInput
+  OR?: PostSubscriptionWhereInput[] | PostSubscriptionWhereInput
+  mutation_in?: MutationType[] | MutationType
+  updatedFields_contains?: String
+  updatedFields_contains_every?: String[] | String
+  updatedFields_contains_some?: String[] | String
+  node?: PostWhereInput
+}
+
+export interface PostCreateInput {
+  isPublished?: Boolean
+  title: String
+  text: String
+  author: UserCreateOneWithoutPostsInput
+}
+
+export interface PostWhereUniqueInput {
+  id?: ID_Input
+}
+
+export interface UserCreateOneWithoutPostsInput {
+  create?: UserCreateWithoutPostsInput
+  connect?: UserWhereUniqueInput
+}
+
+export interface PostUpdateWithoutAuthorDataInput {
+  isPublished?: Boolean
+  title?: String
+  text?: String
+}
+
+export interface UserUpdateWithoutPostsInput {
   where: UserWhereUniqueInput
-  update: UserUpdateWithoutPostsDataInput
-  create: UserCreateWithoutPostsInput
+  data: UserUpdateWithoutPostsDataInput
+}
+
+export interface PostUpdateManyWithoutAuthorInput {
+  create?: PostCreateWithoutAuthorInput[] | PostCreateWithoutAuthorInput
+  connect?: PostWhereUniqueInput[] | PostWhereUniqueInput
+  disconnect?: PostWhereUniqueInput[] | PostWhereUniqueInput
+  delete?: PostWhereUniqueInput[] | PostWhereUniqueInput
+  update?: PostUpdateWithoutAuthorInput[] | PostUpdateWithoutAuthorInput
+  upsert?: PostUpsertWithoutAuthorInput[] | PostUpsertWithoutAuthorInput
 }
 
 export interface UserSubscriptionWhereInput {
@@ -656,34 +721,6 @@ export interface UserSubscriptionWhereInput {
   updatedFields_contains_every?: String[] | String
   updatedFields_contains_some?: String[] | String
   node?: UserWhereInput
-}
-
-export interface UserUpdateWithoutPostsDataInput {
-  email?: String
-  password?: String
-  name?: String
-}
-
-export interface PostWhereUniqueInput {
-  id?: ID_Input
-}
-
-export interface PostCreateInput {
-  isPublished?: Boolean
-  title: String
-  text: String
-  author: UserCreateOneWithoutPostsInput
-}
-
-export interface PostUpsertWithoutAuthorInput {
-  where: PostWhereUniqueInput
-  update: PostUpdateWithoutAuthorDataInput
-  create: PostCreateWithoutAuthorInput
-}
-
-export interface PostUpdateWithoutAuthorInput {
-  where: PostWhereUniqueInput
-  data: PostUpdateWithoutAuthorDataInput
 }
 
 export interface UserUpdateOneWithoutPostsInput {
@@ -699,38 +736,36 @@ export interface UserCreateInput {
   email: String
   password: String
   name: String
+  roles?: UserCreaterolesInput
   posts?: PostCreateManyWithoutAuthorInput
 }
 
-export interface UserUpdateWithoutPostsInput {
-  where: UserWhereUniqueInput
-  data: UserUpdateWithoutPostsDataInput
+export interface UserCreaterolesInput {
+  set?: Role[] | Role
 }
 
-export interface UserCreateOneWithoutPostsInput {
-  create?: UserCreateWithoutPostsInput
-  connect?: UserWhereUniqueInput
+export interface PostUpsertWithoutAuthorInput {
+  where: PostWhereUniqueInput
+  update: PostUpdateWithoutAuthorDataInput
+  create: PostCreateWithoutAuthorInput
 }
 
-export interface PostUpdateWithoutAuthorDataInput {
-  isPublished?: Boolean
-  title?: String
-  text?: String
+export interface UserUpdateInput {
+  email?: String
+  password?: String
+  name?: String
+  roles?: UserUpdaterolesInput
+  posts?: PostUpdateManyWithoutAuthorInput
+}
+
+export interface PostUpdateWithoutAuthorInput {
+  where: PostWhereUniqueInput
+  data: PostUpdateWithoutAuthorDataInput
 }
 
 export interface UserWhereUniqueInput {
   id?: ID_Input
   email?: String
-}
-
-export interface PostSubscriptionWhereInput {
-  AND?: PostSubscriptionWhereInput[] | PostSubscriptionWhereInput
-  OR?: PostSubscriptionWhereInput[] | PostSubscriptionWhereInput
-  mutation_in?: MutationType[] | MutationType
-  updatedFields_contains?: String
-  updatedFields_contains_every?: String[] | String
-  updatedFields_contains_some?: String[] | String
-  node?: PostWhereInput
 }
 
 export interface Node {
@@ -742,6 +777,21 @@ export interface UserPreviousValues {
   email: String
   password: String
   name: String
+  roles?: Role[]
+}
+
+export interface PageInfo {
+  hasNextPage: Boolean
+  hasPreviousPage: Boolean
+  startCursor?: String
+  endCursor?: String
+}
+
+export interface PostSubscriptionPayload {
+  mutation: MutationType
+  node?: Post
+  updatedFields?: String[]
+  previousValues?: PostPreviousValues
 }
 
 export interface PostConnection {
@@ -760,22 +810,9 @@ export interface Post extends Node {
   author: User
 }
 
-export interface PageInfo {
-  hasNextPage: Boolean
-  hasPreviousPage: Boolean
-  startCursor?: String
-  endCursor?: String
-}
-
-export interface PostSubscriptionPayload {
-  mutation: MutationType
-  node?: Post
-  updatedFields?: String[]
-  previousValues?: PostPreviousValues
-}
-
-export interface BatchPayload {
-  count: Long
+export interface UserEdge {
+  node: User
+  cursor: String
 }
 
 export interface PostPreviousValues {
@@ -793,10 +830,11 @@ export interface User extends Node {
   password: String
   name: String
   posts?: Post[]
+  roles?: Role[]
 }
 
-export interface AggregateUser {
-  count: Int
+export interface BatchPayload {
+  count: Long
 }
 
 export interface UserSubscriptionPayload {
@@ -806,9 +844,14 @@ export interface UserSubscriptionPayload {
   previousValues?: UserPreviousValues
 }
 
-export interface UserEdge {
-  node: User
-  cursor: String
+export interface UserConnection {
+  pageInfo: PageInfo
+  edges: UserEdge[]
+  aggregate: AggregateUser
+}
+
+export interface AggregateUser {
+  count: Int
 }
 
 export interface PostEdge {
@@ -820,11 +863,10 @@ export interface AggregatePost {
   count: Int
 }
 
-export interface UserConnection {
-  pageInfo: PageInfo
-  edges: UserEdge[]
-  aggregate: AggregateUser
-}
+/*
+The `Boolean` scalar type represents `true` or `false`.
+*/
+export type Boolean = boolean
 
 /*
 The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. 
@@ -837,17 +879,12 @@ The `ID` scalar type represents a unique identifier, often used to refetch an ob
 export type ID_Input = string | number
 export type ID_Output = string
 
+export type Long = string
+
 /*
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 */
 export type String = string
-
-export type Long = string
-
-/*
-The `Boolean` scalar type represents `true` or `false`.
-*/
-export type Boolean = boolean
 
 export type DateTime = string
 

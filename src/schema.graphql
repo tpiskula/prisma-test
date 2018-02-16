@@ -1,10 +1,12 @@
 # import Post from "./generated/prisma.graphql"
+# import Role from "./generated/prisma.graphql"
 
 type Query {
   feed: [Post!]!
   drafts: [Post!]!
   post(id: ID!): Post!
   me: User
+  users: [User]
 }
 
 type Mutation {
@@ -25,4 +27,6 @@ type User {
   email: String!
   name: String!
   posts: [Post!]!
+  roles: [Role!]!
 }
+
