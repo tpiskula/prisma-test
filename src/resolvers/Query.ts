@@ -1,4 +1,4 @@
-import { getUserId, Context } from '../utils'
+import { getUserId, Context, getUser, AuthError, checkRole } from '../utils'
 
 export const Query = {
   feed(parent, args, ctx: Context, info) {
@@ -25,5 +25,11 @@ export const Query = {
   me(parent, args, ctx: Context, info) {
     const id = getUserId(ctx)
     return ctx.db.query.user({ where: { id } }, info)
+  },
+
+  async users(parent, args, ctx: Context, info) {
+    checkRole(ctx,'ADMIN')
+    
+    return ctx.db.query.users(args, info)
   },
 }
