@@ -1,8 +1,9 @@
-import { getUserId, Context } from '../../utils'
+import { checkScope, Context } from '../../utils'
 
 export const post = {
   async createDraft(parent, { title, text }, ctx: Context, info) {
-    const userId = getUserId(ctx)
+    const userId = checkScope(ctx,"post")
+    
     return ctx.db.mutation.createPost(
       {
         data: {
@@ -19,7 +20,7 @@ export const post = {
   },
 
   async publish(parent, { id }, ctx: Context, info) {
-    const userId = getUserId(ctx)
+    const userId = checkScope(ctx,"post")
     const postExists = await ctx.db.exists.Post({
       id,
       author: { id: userId },
@@ -38,7 +39,7 @@ export const post = {
   },
 
   async deletePost(parent, { id }, ctx: Context, info) {
-    const userId = getUserId(ctx)
+    const userId = checkScope(ctx,"post")
     const postExists = await ctx.db.exists.Post({
       id,
       author: { id: userId },

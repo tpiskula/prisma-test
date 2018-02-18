@@ -1,12 +1,14 @@
-import { getUserId, Context, getUser, AuthError, checkRole } from '../utils'
+import { getUserId, Context, getUser, AuthError, checkRole, checkScope } from '../utils'
 
 export const Query = {
   feed(parent, args, ctx: Context, info) {
+    checkScope(ctx,"feed")
+    
     return ctx.db.query.posts({ where: { isPublished: true } }, info)
   },
 
   drafts(parent, args, ctx: Context, info) {
-    const id = getUserId(ctx)
+    const id = checkScope(ctx,"drafts")
 
     const where = {
       isPublished: false,
@@ -19,16 +21,17 @@ export const Query = {
   },
 
   post(parent, { id }, ctx: Context, info) {
+    checkScope(ctx,"post")
     return ctx.db.query.post({ where: { id: id } }, info)
   },
 
   me(parent, args, ctx: Context, info) {
-    const id = getUserId(ctx)
+    const id = checkScope(ctx,"user")
     return ctx.db.query.user({ where: { id } }, info)
   },
 
   async users(parent, args, ctx: Context, info) {
-    checkRole(ctx,'ADMIN')
+    checkScope(ctx,"users")
     
     return ctx.db.query.users(args, info)
   },

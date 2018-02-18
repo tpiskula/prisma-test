@@ -2,18 +2,26 @@
 # import Role from "./generated/prisma.graphql"
 
 type Query {
+  "scope: feed"
   feed(orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
+  "scope: drafts"
   drafts(orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
+  "scope: post"
   post(id: ID!): Post!
+  "scope: user"
   me: User
+  "scope: users"
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
 }
 
 type Mutation {
   signup(email: String!, password: String!, name: String!): AuthPayload!
   login(email: String!, password: String!): AuthPayload!
+  "scope: post"
   createDraft(title: String!, text: String!): Post!
+  "scope: post"
   publish(id: ID!): Post!
+  "scope: post"
   deletePost(id: ID!): Post!
 }
 
