@@ -1,7 +1,8 @@
 import * as bcrypt from 'bcryptjs'
 import * as jwt from 'jsonwebtoken'
-import { Context, Scope } from '../../utils'
-import { User } from '../../generated/prisma';
+import { Context } from '../../utils'
+import { Scope } from '../../Auth'
+import { User } from '../../generated/prisma'
 
 const userQuery = `
   query ($email: String!) {
