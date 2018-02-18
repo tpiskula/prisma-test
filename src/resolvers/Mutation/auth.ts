@@ -1,9 +1,8 @@
 import * as bcrypt from 'bcryptjs'
 import * as jwt from 'jsonwebtoken'
 import { Context } from '../../utils'
-import { Scope } from '../../Auth'
+import { Scope, Auth } from '../../Auth'
 import { User } from '../../generated/prisma'
-
 const userQuery = `
   query ($email: String!) {
     user(where: {email: $email}) {
@@ -16,13 +15,6 @@ const userQuery = `
   }
 `
 
-function getToken(user: User) {
-  let scopes : Scope[] = ['user','feed'];
-  if(user.roles.includes('ADMIN')) {
-    scopes.push('users')
-  }
-  return jwt.sign({ id: user.id, name: user.name,email: user.email,roles:user.roles, scopes: scopes }, process.env.APP_SECRET)
-}
 
 async function queryUserByMail(ctx: Context,email: String) : Promise<User> {
   const variables = { email: email }
@@ -37,7 +29,7 @@ export const auth = {
     })
     user = await queryUserByMail(ctx,user.email)
     return {
-      token: getToken(user),
+      token: Auth.getToken(user),
       user,
     }
   },
@@ -54,7 +46,7 @@ export const auth = {
     }
 
     return {
-      token: getToken(user),
+      token: Auth.getToken(user),
       user,
     }
   },
