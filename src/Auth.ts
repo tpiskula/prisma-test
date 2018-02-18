@@ -39,8 +39,13 @@ export class Auth {
         const Authorization = this.context.request.get('Authorization')
         if (Authorization) {
           const token = Authorization.replace('Bearer ', '')
-          const user = jwt.verify(token, this.secret) as User
-          return user
+          try {
+            const user = jwt.verify(token, this.secret) as User
+            return user
+          }
+          catch {
+            throw new AuthError()
+          }
         }
         throw new AuthError()
     }
@@ -68,13 +73,9 @@ export class Auth {
         return user.id;
     }
 
-    static getToken(user: User) {
-        let scopes : Scope[] = ['user','feed'];
-        if(user.roles.includes('ADMIN')) {
-            scopes.push('users')
-        }
+    static getToken(user: User, scopes?: Scope[]) {
         return jwt.sign({ 
-            id: user.id, 
+            id: user.id,
             name: user.name,
             email: user.email,
             scopes: scopes 

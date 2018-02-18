@@ -34,19 +34,30 @@ export const auth = {
     }
   },
 
-  async login(parent, { email, password }, ctx: Context, info) {
+  async login(parent, { email, password, scopes }, ctx: Context, info) {
     const user = await queryUserByMail(ctx,email)
     if (!user) {
       throw new Error(`No such user found for email: ${email}`)
     }
-    console.log("User:",user.roles)
     const valid = await bcrypt.compare(password, user.password)
     if (!valid) {
       throw new Error('Invalid password')
     }
 
+    const userScopes = ['user','feed','drafts'];
+    const adminScopes = userScopes.concat(['users']);
+    const allowedScopes = user.roles.includes('ADMIN') ? adminScopes : userScopes;
+    // TODO get allowed scopes from db user/roles
+    let requestedScopes : Scope[] = scopes || allowedScopes;
+    const validScopes = requestedScopes.map((scope) => {
+        if(!allowedScopes.includes(scope)){
+          throw new Error('Invalid scope requested')
+        }
+        return scope;
+    }).filter(s => s)
+
     return {
-      token: Auth.getToken(user),
+      token: Auth.getToken(user,validScopes),
       user,
     }
   },
