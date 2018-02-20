@@ -11,12 +11,7 @@ export interface AuthUser {
     scopes?: Scope[]
 }
   
-export type Scope = 
-    'user' |
-    'feed' |
-    'drafts' |
-    'post' |
-    'users'
+export type Scope = string
   
 
 export class AuthError extends Error {

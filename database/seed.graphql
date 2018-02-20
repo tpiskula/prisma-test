@@ -1,10 +1,20 @@
-mutation {
+mutation createUserRole {
+  createRole(data: {name: "USER", scopes: {set: ["user", "feed", "drafts"]}}) {
+    name
+  }
+}
+mutation createAdminRole {
+  createRole(data: {name: "ADMIN", scopes: {set: ["user", "feed", "drafts","users"]}}) {
+    name
+  }
+}
+mutation createAdminUser {
   createUser(data: {
     email: "developer@example.com"
     password: "$2a$10$hACwQ5/HQI6FhbIISOUVeusy3sKyUDhSq36fF5d/54aAdiygJPFzm" # plaintext password: "nooneknows"
     name: "Sarah"
     roles: {
-      set: [ADMIN]
+      connect: {name: "ADMIN"}
     }
     posts: {
       create: [{

@@ -25,7 +25,7 @@ type User implements Node {
   password: String!
   name: String!
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
-  roles: [Role!]
+  roles(where: RoleWhereInput, orderBy: RoleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Role!]
 }
 
 
@@ -34,6 +34,10 @@ type User implements Node {
 #
 
 type AggregatePost {
+  count: Int!
+}
+
+type AggregateRole {
   count: Int!
 }
 
@@ -52,16 +56,22 @@ scalar Long
 type Mutation {
   createPost(data: PostCreateInput!): Post!
   createUser(data: UserCreateInput!): User!
+  createRole(data: RoleCreateInput!): Role!
   updatePost(data: PostUpdateInput!, where: PostWhereUniqueInput!): Post
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updateRole(data: RoleUpdateInput!, where: RoleWhereUniqueInput!): Role
   deletePost(where: PostWhereUniqueInput!): Post
   deleteUser(where: UserWhereUniqueInput!): User
+  deleteRole(where: RoleWhereUniqueInput!): Role
   upsertPost(where: PostWhereUniqueInput!, create: PostCreateInput!, update: PostUpdateInput!): Post!
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  upsertRole(where: RoleWhereUniqueInput!, create: RoleCreateInput!, update: RoleUpdateInput!): Role!
   updateManyPosts(data: PostUpdateInput!, where: PostWhereInput!): BatchPayload!
   updateManyUsers(data: UserUpdateInput!, where: UserWhereInput!): BatchPayload!
+  updateManyRoles(data: RoleUpdateInput!, where: RoleWhereInput!): BatchPayload!
   deleteManyPosts(where: PostWhereInput!): BatchPayload!
   deleteManyUsers(where: UserWhereInput!): BatchPayload!
+  deleteManyRoles(where: RoleWhereInput!): BatchPayload!
 }
 
 enum MutationType {
@@ -257,21 +267,140 @@ input PostWhereUniqueInput {
 type Query {
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  roles(where: RoleWhereInput, orderBy: RoleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Role]!
   post(where: PostWhereUniqueInput!): Post
   user(where: UserWhereUniqueInput!): User
+  role(where: RoleWhereUniqueInput!): Role
   postsConnection(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PostConnection!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  rolesConnection(where: RoleWhereInput, orderBy: RoleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): RoleConnection!
   node(id: ID!): Node
 }
 
-enum Role {
-  ADMIN
-  USER
+type Role {
+  name: String!
+  scopes: [String!]
+}
+
+type RoleConnection {
+  pageInfo: PageInfo!
+  edges: [RoleEdge]!
+  aggregate: AggregateRole!
+}
+
+input RoleCreateInput {
+  name: String!
+  scopes: RoleCreatescopesInput
+}
+
+input RoleCreateManyInput {
+  create: [RoleCreateInput!]
+  connect: [RoleWhereUniqueInput!]
+}
+
+input RoleCreatescopesInput {
+  set: [String!]
+}
+
+type RoleEdge {
+  node: Role!
+  cursor: String!
+}
+
+enum RoleOrderByInput {
+  name_ASC
+  name_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type RolePreviousValues {
+  name: String!
+  scopes: [String!]
+}
+
+type RoleSubscriptionPayload {
+  mutation: MutationType!
+  node: Role
+  updatedFields: [String!]
+  previousValues: RolePreviousValues
+}
+
+input RoleSubscriptionWhereInput {
+  AND: [RoleSubscriptionWhereInput!]
+  OR: [RoleSubscriptionWhereInput!]
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: RoleWhereInput
+}
+
+input RoleUpdateDataInput {
+  name: String
+  scopes: RoleUpdatescopesInput
+}
+
+input RoleUpdateInput {
+  name: String
+  scopes: RoleUpdatescopesInput
+}
+
+input RoleUpdateManyInput {
+  create: [RoleCreateInput!]
+  connect: [RoleWhereUniqueInput!]
+  disconnect: [RoleWhereUniqueInput!]
+  delete: [RoleWhereUniqueInput!]
+  update: [RoleUpdateNestedInput!]
+  upsert: [RoleUpsertNestedInput!]
+}
+
+input RoleUpdateNestedInput {
+  where: RoleWhereUniqueInput!
+  data: RoleUpdateDataInput!
+}
+
+input RoleUpdatescopesInput {
+  set: [String!]
+}
+
+input RoleUpsertNestedInput {
+  where: RoleWhereUniqueInput!
+  update: RoleUpdateDataInput!
+  create: RoleCreateInput!
+}
+
+input RoleWhereInput {
+  AND: [RoleWhereInput!]
+  OR: [RoleWhereInput!]
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+}
+
+input RoleWhereUniqueInput {
+  name: String
 }
 
 type Subscription {
   post(where: PostSubscriptionWhereInput): PostSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  role(where: RoleSubscriptionWhereInput): RoleSubscriptionPayload
 }
 
 type UserConnection {
@@ -284,8 +413,8 @@ input UserCreateInput {
   email: String!
   password: String!
   name: String!
-  roles: UserCreaterolesInput
   posts: PostCreateManyWithoutAuthorInput
+  roles: RoleCreateManyInput
 }
 
 input UserCreateOneWithoutPostsInput {
@@ -293,15 +422,11 @@ input UserCreateOneWithoutPostsInput {
   connect: UserWhereUniqueInput
 }
 
-input UserCreaterolesInput {
-  set: [Role!]
-}
-
 input UserCreateWithoutPostsInput {
   email: String!
   password: String!
   name: String!
-  roles: UserCreaterolesInput
+  roles: RoleCreateManyInput
 }
 
 type UserEdge {
@@ -329,7 +454,6 @@ type UserPreviousValues {
   email: String!
   password: String!
   name: String!
-  roles: [Role!]
 }
 
 type UserSubscriptionPayload {
@@ -353,8 +477,8 @@ input UserUpdateInput {
   email: String
   password: String
   name: String
-  roles: UserUpdaterolesInput
   posts: PostUpdateManyWithoutAuthorInput
+  roles: RoleUpdateManyInput
 }
 
 input UserUpdateOneWithoutPostsInput {
@@ -366,15 +490,11 @@ input UserUpdateOneWithoutPostsInput {
   upsert: UserUpsertWithoutPostsInput
 }
 
-input UserUpdaterolesInput {
-  set: [Role!]
-}
-
 input UserUpdateWithoutPostsDataInput {
   email: String
   password: String
   name: String
-  roles: UserUpdaterolesInput
+  roles: RoleUpdateManyInput
 }
 
 input UserUpdateWithoutPostsInput {
@@ -450,6 +570,9 @@ input UserWhereInput {
   posts_every: PostWhereInput
   posts_some: PostWhereInput
   posts_none: PostWhereInput
+  roles_every: RoleWhereInput
+  roles_some: RoleWhereInput
+  roles_none: RoleWhereInput
 }
 
 input UserWhereUniqueInput {
@@ -472,9 +595,15 @@ export type PostOrderByInput =
   'text_ASC' |
   'text_DESC'
 
-export type Role = 
-  'ADMIN' |
-  'USER'
+export type RoleOrderByInput = 
+  'name_ASC' |
+  'name_DESC' |
+  'id_ASC' |
+  'id_DESC' |
+  'updatedAt_ASC' |
+  'updatedAt_DESC' |
+  'createdAt_ASC' |
+  'createdAt_DESC'
 
 export type UserOrderByInput = 
   'id_ASC' |
@@ -495,11 +624,9 @@ export type MutationType =
   'UPDATED' |
   'DELETED'
 
-export interface UserCreateWithoutPostsInput {
-  email: String
-  password: String
+export interface RoleCreateInput {
   name: String
-  roles?: UserCreaterolesInput
+  scopes?: RoleCreatescopesInput
 }
 
 export interface PostWhereInput {
@@ -573,6 +700,193 @@ export interface PostCreateManyWithoutAuthorInput {
   connect?: PostWhereUniqueInput[] | PostWhereUniqueInput
 }
 
+export interface RoleWhereInput {
+  AND?: RoleWhereInput[] | RoleWhereInput
+  OR?: RoleWhereInput[] | RoleWhereInput
+  name?: String
+  name_not?: String
+  name_in?: String[] | String
+  name_not_in?: String[] | String
+  name_lt?: String
+  name_lte?: String
+  name_gt?: String
+  name_gte?: String
+  name_contains?: String
+  name_not_contains?: String
+  name_starts_with?: String
+  name_not_starts_with?: String
+  name_ends_with?: String
+  name_not_ends_with?: String
+}
+
+export interface RoleUpsertNestedInput {
+  where: RoleWhereUniqueInput
+  update: RoleUpdateDataInput
+  create: RoleCreateInput
+}
+
+export interface UserUpdateWithoutPostsInput {
+  where: UserWhereUniqueInput
+  data: UserUpdateWithoutPostsDataInput
+}
+
+export interface RoleUpdatescopesInput {
+  set?: String[] | String
+}
+
+export interface PostCreateWithoutAuthorInput {
+  isPublished?: Boolean
+  title: String
+  text: String
+}
+
+export interface RoleUpdateDataInput {
+  name?: String
+  scopes?: RoleUpdatescopesInput
+}
+
+export interface RoleSubscriptionWhereInput {
+  AND?: RoleSubscriptionWhereInput[] | RoleSubscriptionWhereInput
+  OR?: RoleSubscriptionWhereInput[] | RoleSubscriptionWhereInput
+  mutation_in?: MutationType[] | MutationType
+  updatedFields_contains?: String
+  updatedFields_contains_every?: String[] | String
+  updatedFields_contains_some?: String[] | String
+  node?: RoleWhereInput
+}
+
+export interface RoleUpdateNestedInput {
+  where: RoleWhereUniqueInput
+  data: RoleUpdateDataInput
+}
+
+export interface PostSubscriptionWhereInput {
+  AND?: PostSubscriptionWhereInput[] | PostSubscriptionWhereInput
+  OR?: PostSubscriptionWhereInput[] | PostSubscriptionWhereInput
+  mutation_in?: MutationType[] | MutationType
+  updatedFields_contains?: String
+  updatedFields_contains_every?: String[] | String
+  updatedFields_contains_some?: String[] | String
+  node?: PostWhereInput
+}
+
+export interface PostCreateInput {
+  isPublished?: Boolean
+  title: String
+  text: String
+  author: UserCreateOneWithoutPostsInput
+}
+
+export interface PostWhereUniqueInput {
+  id?: ID_Input
+}
+
+export interface UserCreateOneWithoutPostsInput {
+  create?: UserCreateWithoutPostsInput
+  connect?: UserWhereUniqueInput
+}
+
+export interface RoleWhereUniqueInput {
+  name?: String
+}
+
+export interface UserCreateWithoutPostsInput {
+  email: String
+  password: String
+  name: String
+  roles?: RoleCreateManyInput
+}
+
+export interface PostUpdateWithoutAuthorDataInput {
+  isPublished?: Boolean
+  title?: String
+  text?: String
+}
+
+export interface RoleCreateManyInput {
+  create?: RoleCreateInput[] | RoleCreateInput
+  connect?: RoleWhereUniqueInput[] | RoleWhereUniqueInput
+}
+
+export interface PostUpdateManyWithoutAuthorInput {
+  create?: PostCreateWithoutAuthorInput[] | PostCreateWithoutAuthorInput
+  connect?: PostWhereUniqueInput[] | PostWhereUniqueInput
+  disconnect?: PostWhereUniqueInput[] | PostWhereUniqueInput
+  delete?: PostWhereUniqueInput[] | PostWhereUniqueInput
+  update?: PostUpdateWithoutAuthorInput[] | PostUpdateWithoutAuthorInput
+  upsert?: PostUpsertWithoutAuthorInput[] | PostUpsertWithoutAuthorInput
+}
+
+export interface RoleUpdateManyInput {
+  create?: RoleCreateInput[] | RoleCreateInput
+  connect?: RoleWhereUniqueInput[] | RoleWhereUniqueInput
+  disconnect?: RoleWhereUniqueInput[] | RoleWhereUniqueInput
+  delete?: RoleWhereUniqueInput[] | RoleWhereUniqueInput
+  update?: RoleUpdateNestedInput[] | RoleUpdateNestedInput
+  upsert?: RoleUpsertNestedInput[] | RoleUpsertNestedInput
+}
+
+export interface UserUpsertWithoutPostsInput {
+  where: UserWhereUniqueInput
+  update: UserUpdateWithoutPostsDataInput
+  create: UserCreateWithoutPostsInput
+}
+
+export interface RoleCreatescopesInput {
+  set?: String[] | String
+}
+
+export interface UserSubscriptionWhereInput {
+  AND?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput
+  OR?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput
+  mutation_in?: MutationType[] | MutationType
+  updatedFields_contains?: String
+  updatedFields_contains_every?: String[] | String
+  updatedFields_contains_some?: String[] | String
+  node?: UserWhereInput
+}
+
+export interface UserCreateInput {
+  email: String
+  password: String
+  name: String
+  posts?: PostCreateManyWithoutAuthorInput
+  roles?: RoleCreateManyInput
+}
+
+export interface UserWhereUniqueInput {
+  id?: ID_Input
+  email?: String
+}
+
+export interface PostUpdateWithoutAuthorInput {
+  where: PostWhereUniqueInput
+  data: PostUpdateWithoutAuthorDataInput
+}
+
+export interface UserUpdateOneWithoutPostsInput {
+  create?: UserCreateWithoutPostsInput
+  connect?: UserWhereUniqueInput
+  disconnect?: UserWhereUniqueInput
+  delete?: UserWhereUniqueInput
+  update?: UserUpdateWithoutPostsInput
+  upsert?: UserUpsertWithoutPostsInput
+}
+
+export interface PostUpdateInput {
+  isPublished?: Boolean
+  title?: String
+  text?: String
+  author?: UserUpdateOneWithoutPostsInput
+}
+
+export interface UserUpdateWithoutPostsDataInput {
+  email?: String
+  password?: String
+  name?: String
+  roles?: RoleUpdateManyInput
+}
+
 export interface UserWhereInput {
   AND?: UserWhereInput[] | UserWhereInput
   OR?: UserWhereInput[] | UserWhereInput
@@ -635,113 +949,17 @@ export interface UserWhereInput {
   posts_every?: PostWhereInput
   posts_some?: PostWhereInput
   posts_none?: PostWhereInput
+  roles_every?: RoleWhereInput
+  roles_some?: RoleWhereInput
+  roles_none?: RoleWhereInput
 }
 
-export interface UserUpsertWithoutPostsInput {
-  where: UserWhereUniqueInput
-  update: UserUpdateWithoutPostsDataInput
-  create: UserCreateWithoutPostsInput
-}
-
-export interface PostUpdateInput {
-  isPublished?: Boolean
-  title?: String
-  text?: String
-  author?: UserUpdateOneWithoutPostsInput
-}
-
-export interface UserUpdaterolesInput {
-  set?: Role[] | Role
-}
-
-export interface PostCreateWithoutAuthorInput {
-  isPublished?: Boolean
-  title: String
-  text: String
-}
-
-export interface UserUpdateWithoutPostsDataInput {
+export interface UserUpdateInput {
   email?: String
   password?: String
   name?: String
-  roles?: UserUpdaterolesInput
-}
-
-export interface PostSubscriptionWhereInput {
-  AND?: PostSubscriptionWhereInput[] | PostSubscriptionWhereInput
-  OR?: PostSubscriptionWhereInput[] | PostSubscriptionWhereInput
-  mutation_in?: MutationType[] | MutationType
-  updatedFields_contains?: String
-  updatedFields_contains_every?: String[] | String
-  updatedFields_contains_some?: String[] | String
-  node?: PostWhereInput
-}
-
-export interface PostCreateInput {
-  isPublished?: Boolean
-  title: String
-  text: String
-  author: UserCreateOneWithoutPostsInput
-}
-
-export interface PostWhereUniqueInput {
-  id?: ID_Input
-}
-
-export interface UserCreateOneWithoutPostsInput {
-  create?: UserCreateWithoutPostsInput
-  connect?: UserWhereUniqueInput
-}
-
-export interface PostUpdateWithoutAuthorDataInput {
-  isPublished?: Boolean
-  title?: String
-  text?: String
-}
-
-export interface UserUpdateWithoutPostsInput {
-  where: UserWhereUniqueInput
-  data: UserUpdateWithoutPostsDataInput
-}
-
-export interface PostUpdateManyWithoutAuthorInput {
-  create?: PostCreateWithoutAuthorInput[] | PostCreateWithoutAuthorInput
-  connect?: PostWhereUniqueInput[] | PostWhereUniqueInput
-  disconnect?: PostWhereUniqueInput[] | PostWhereUniqueInput
-  delete?: PostWhereUniqueInput[] | PostWhereUniqueInput
-  update?: PostUpdateWithoutAuthorInput[] | PostUpdateWithoutAuthorInput
-  upsert?: PostUpsertWithoutAuthorInput[] | PostUpsertWithoutAuthorInput
-}
-
-export interface UserSubscriptionWhereInput {
-  AND?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput
-  OR?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput
-  mutation_in?: MutationType[] | MutationType
-  updatedFields_contains?: String
-  updatedFields_contains_every?: String[] | String
-  updatedFields_contains_some?: String[] | String
-  node?: UserWhereInput
-}
-
-export interface UserUpdateOneWithoutPostsInput {
-  create?: UserCreateWithoutPostsInput
-  connect?: UserWhereUniqueInput
-  disconnect?: UserWhereUniqueInput
-  delete?: UserWhereUniqueInput
-  update?: UserUpdateWithoutPostsInput
-  upsert?: UserUpsertWithoutPostsInput
-}
-
-export interface UserCreateInput {
-  email: String
-  password: String
-  name: String
-  roles?: UserCreaterolesInput
-  posts?: PostCreateManyWithoutAuthorInput
-}
-
-export interface UserCreaterolesInput {
-  set?: Role[] | Role
+  posts?: PostUpdateManyWithoutAuthorInput
+  roles?: RoleUpdateManyInput
 }
 
 export interface PostUpsertWithoutAuthorInput {
@@ -750,34 +968,18 @@ export interface PostUpsertWithoutAuthorInput {
   create: PostCreateWithoutAuthorInput
 }
 
-export interface UserUpdateInput {
-  email?: String
-  password?: String
+export interface RoleUpdateInput {
   name?: String
-  roles?: UserUpdaterolesInput
-  posts?: PostUpdateManyWithoutAuthorInput
-}
-
-export interface PostUpdateWithoutAuthorInput {
-  where: PostWhereUniqueInput
-  data: PostUpdateWithoutAuthorDataInput
-}
-
-export interface UserWhereUniqueInput {
-  id?: ID_Input
-  email?: String
+  scopes?: RoleUpdatescopesInput
 }
 
 export interface Node {
   id: ID_Output
 }
 
-export interface UserPreviousValues {
-  id: ID_Output
-  email: String
-  password: String
+export interface RolePreviousValues {
   name: String
-  roles?: Role[]
+  scopes?: String[]
 }
 
 export interface PageInfo {
@@ -787,11 +989,11 @@ export interface PageInfo {
   endCursor?: String
 }
 
-export interface PostSubscriptionPayload {
+export interface UserSubscriptionPayload {
   mutation: MutationType
-  node?: Post
+  node?: User
   updatedFields?: String[]
-  previousValues?: PostPreviousValues
+  previousValues?: UserPreviousValues
 }
 
 export interface PostConnection {
@@ -810,8 +1012,43 @@ export interface Post extends Node {
   author: User
 }
 
-export interface UserEdge {
-  node: User
+export interface RoleSubscriptionPayload {
+  mutation: MutationType
+  node?: Role
+  updatedFields?: String[]
+  previousValues?: RolePreviousValues
+}
+
+export interface RoleEdge {
+  node: Role
+  cursor: String
+}
+
+export interface BatchPayload {
+  count: Long
+}
+
+export interface AggregateUser {
+  count: Int
+}
+
+export interface User extends Node {
+  id: ID_Output
+  email: String
+  password: String
+  name: String
+  posts?: Post[]
+  roles?: Role[]
+}
+
+export interface UserConnection {
+  pageInfo: PageInfo
+  edges: UserEdge[]
+  aggregate: AggregateUser
+}
+
+export interface PostEdge {
+  node: Post
   cursor: String
 }
 
@@ -824,43 +1061,42 @@ export interface PostPreviousValues {
   text: String
 }
 
-export interface User extends Node {
+export interface PostSubscriptionPayload {
+  mutation: MutationType
+  node?: Post
+  updatedFields?: String[]
+  previousValues?: PostPreviousValues
+}
+
+export interface UserPreviousValues {
   id: ID_Output
   email: String
   password: String
   name: String
-  posts?: Post[]
-  roles?: Role[]
 }
 
-export interface BatchPayload {
-  count: Long
+export interface Role {
+  name: String
+  scopes?: String[]
 }
 
-export interface UserSubscriptionPayload {
-  mutation: MutationType
-  node?: User
-  updatedFields?: String[]
-  previousValues?: UserPreviousValues
-}
-
-export interface UserConnection {
-  pageInfo: PageInfo
-  edges: UserEdge[]
-  aggregate: AggregateUser
-}
-
-export interface AggregateUser {
+export interface AggregateRole {
   count: Int
-}
-
-export interface PostEdge {
-  node: Post
-  cursor: String
 }
 
 export interface AggregatePost {
   count: Int
+}
+
+export interface UserEdge {
+  node: User
+  cursor: String
+}
+
+export interface RoleConnection {
+  pageInfo: PageInfo
+  edges: RoleEdge[]
+  aggregate: AggregateRole
 }
 
 /*
@@ -881,12 +1117,12 @@ export type ID_Output = string
 
 export type Long = string
 
+export type DateTime = string
+
 /*
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 */
 export type String = string
-
-export type DateTime = string
 
 export interface Schema {
   query: Query
@@ -897,31 +1133,41 @@ export interface Schema {
 export type Query = {
   posts: (args: { where?: PostWhereInput, orderBy?: PostOrderByInput, skip?: Int, after?: String, before?: String, first?: Int, last?: Int }, info?: GraphQLResolveInfo | string) => Promise<Post[]>
   users: (args: { where?: UserWhereInput, orderBy?: UserOrderByInput, skip?: Int, after?: String, before?: String, first?: Int, last?: Int }, info?: GraphQLResolveInfo | string) => Promise<User[]>
+  roles: (args: { where?: RoleWhereInput, orderBy?: RoleOrderByInput, skip?: Int, after?: String, before?: String, first?: Int, last?: Int }, info?: GraphQLResolveInfo | string) => Promise<Role[]>
   post: (args: { where: PostWhereUniqueInput }, info?: GraphQLResolveInfo | string) => Promise<Post | null>
   user: (args: { where: UserWhereUniqueInput }, info?: GraphQLResolveInfo | string) => Promise<User | null>
+  role: (args: { where: RoleWhereUniqueInput }, info?: GraphQLResolveInfo | string) => Promise<Role | null>
   postsConnection: (args: { where?: PostWhereInput, orderBy?: PostOrderByInput, skip?: Int, after?: String, before?: String, first?: Int, last?: Int }, info?: GraphQLResolveInfo | string) => Promise<PostConnection>
   usersConnection: (args: { where?: UserWhereInput, orderBy?: UserOrderByInput, skip?: Int, after?: String, before?: String, first?: Int, last?: Int }, info?: GraphQLResolveInfo | string) => Promise<UserConnection>
+  rolesConnection: (args: { where?: RoleWhereInput, orderBy?: RoleOrderByInput, skip?: Int, after?: String, before?: String, first?: Int, last?: Int }, info?: GraphQLResolveInfo | string) => Promise<RoleConnection>
   node: (args: { id: ID_Output }, info?: GraphQLResolveInfo | string) => Promise<Node | null>
 }
 
 export type Mutation = {
   createPost: (args: { data: PostCreateInput }, info?: GraphQLResolveInfo | string) => Promise<Post>
   createUser: (args: { data: UserCreateInput }, info?: GraphQLResolveInfo | string) => Promise<User>
+  createRole: (args: { data: RoleCreateInput }, info?: GraphQLResolveInfo | string) => Promise<Role>
   updatePost: (args: { data: PostUpdateInput, where: PostWhereUniqueInput }, info?: GraphQLResolveInfo | string) => Promise<Post | null>
   updateUser: (args: { data: UserUpdateInput, where: UserWhereUniqueInput }, info?: GraphQLResolveInfo | string) => Promise<User | null>
+  updateRole: (args: { data: RoleUpdateInput, where: RoleWhereUniqueInput }, info?: GraphQLResolveInfo | string) => Promise<Role | null>
   deletePost: (args: { where: PostWhereUniqueInput }, info?: GraphQLResolveInfo | string) => Promise<Post | null>
   deleteUser: (args: { where: UserWhereUniqueInput }, info?: GraphQLResolveInfo | string) => Promise<User | null>
+  deleteRole: (args: { where: RoleWhereUniqueInput }, info?: GraphQLResolveInfo | string) => Promise<Role | null>
   upsertPost: (args: { where: PostWhereUniqueInput, create: PostCreateInput, update: PostUpdateInput }, info?: GraphQLResolveInfo | string) => Promise<Post>
   upsertUser: (args: { where: UserWhereUniqueInput, create: UserCreateInput, update: UserUpdateInput }, info?: GraphQLResolveInfo | string) => Promise<User>
+  upsertRole: (args: { where: RoleWhereUniqueInput, create: RoleCreateInput, update: RoleUpdateInput }, info?: GraphQLResolveInfo | string) => Promise<Role>
   updateManyPosts: (args: { data: PostUpdateInput, where: PostWhereInput }, info?: GraphQLResolveInfo | string) => Promise<BatchPayload>
   updateManyUsers: (args: { data: UserUpdateInput, where: UserWhereInput }, info?: GraphQLResolveInfo | string) => Promise<BatchPayload>
+  updateManyRoles: (args: { data: RoleUpdateInput, where: RoleWhereInput }, info?: GraphQLResolveInfo | string) => Promise<BatchPayload>
   deleteManyPosts: (args: { where: PostWhereInput }, info?: GraphQLResolveInfo | string) => Promise<BatchPayload>
   deleteManyUsers: (args: { where: UserWhereInput }, info?: GraphQLResolveInfo | string) => Promise<BatchPayload>
+  deleteManyRoles: (args: { where: RoleWhereInput }, info?: GraphQLResolveInfo | string) => Promise<BatchPayload>
 }
 
 export type Subscription = {
   post: (args: { where?: PostSubscriptionWhereInput }, infoOrQuery?: GraphQLResolveInfo | string) => Promise<AsyncIterator<PostSubscriptionPayload>>
   user: (args: { where?: UserSubscriptionWhereInput }, infoOrQuery?: GraphQLResolveInfo | string) => Promise<AsyncIterator<UserSubscriptionPayload>>
+  role: (args: { where?: RoleSubscriptionWhereInput }, infoOrQuery?: GraphQLResolveInfo | string) => Promise<AsyncIterator<RoleSubscriptionPayload>>
 }
 
 export class Prisma extends BasePrisma {
@@ -932,36 +1178,47 @@ export class Prisma extends BasePrisma {
 
   exists = {
     Post: (where: PostWhereInput): Promise<boolean> => super.existsDelegate('query', 'posts', { where }, {}, '{ id }'),
-    User: (where: UserWhereInput): Promise<boolean> => super.existsDelegate('query', 'users', { where }, {}, '{ id }')
+    User: (where: UserWhereInput): Promise<boolean> => super.existsDelegate('query', 'users', { where }, {}, '{ id }'),
+    Role: (where: RoleWhereInput): Promise<boolean> => super.existsDelegate('query', 'roles', { where }, {}, '{ id }')
   }
 
   query: Query = {
     posts: (args, info): Promise<Post[]> => super.delegate('query', 'posts', args, {}, info),
     users: (args, info): Promise<User[]> => super.delegate('query', 'users', args, {}, info),
+    roles: (args, info): Promise<Role[]> => super.delegate('query', 'roles', args, {}, info),
     post: (args, info): Promise<Post | null> => super.delegate('query', 'post', args, {}, info),
     user: (args, info): Promise<User | null> => super.delegate('query', 'user', args, {}, info),
+    role: (args, info): Promise<Role | null> => super.delegate('query', 'role', args, {}, info),
     postsConnection: (args, info): Promise<PostConnection> => super.delegate('query', 'postsConnection', args, {}, info),
     usersConnection: (args, info): Promise<UserConnection> => super.delegate('query', 'usersConnection', args, {}, info),
+    rolesConnection: (args, info): Promise<RoleConnection> => super.delegate('query', 'rolesConnection', args, {}, info),
     node: (args, info): Promise<Node | null> => super.delegate('query', 'node', args, {}, info)
   }
 
   mutation: Mutation = {
     createPost: (args, info): Promise<Post> => super.delegate('mutation', 'createPost', args, {}, info),
     createUser: (args, info): Promise<User> => super.delegate('mutation', 'createUser', args, {}, info),
+    createRole: (args, info): Promise<Role> => super.delegate('mutation', 'createRole', args, {}, info),
     updatePost: (args, info): Promise<Post | null> => super.delegate('mutation', 'updatePost', args, {}, info),
     updateUser: (args, info): Promise<User | null> => super.delegate('mutation', 'updateUser', args, {}, info),
+    updateRole: (args, info): Promise<Role | null> => super.delegate('mutation', 'updateRole', args, {}, info),
     deletePost: (args, info): Promise<Post | null> => super.delegate('mutation', 'deletePost', args, {}, info),
     deleteUser: (args, info): Promise<User | null> => super.delegate('mutation', 'deleteUser', args, {}, info),
+    deleteRole: (args, info): Promise<Role | null> => super.delegate('mutation', 'deleteRole', args, {}, info),
     upsertPost: (args, info): Promise<Post> => super.delegate('mutation', 'upsertPost', args, {}, info),
     upsertUser: (args, info): Promise<User> => super.delegate('mutation', 'upsertUser', args, {}, info),
+    upsertRole: (args, info): Promise<Role> => super.delegate('mutation', 'upsertRole', args, {}, info),
     updateManyPosts: (args, info): Promise<BatchPayload> => super.delegate('mutation', 'updateManyPosts', args, {}, info),
     updateManyUsers: (args, info): Promise<BatchPayload> => super.delegate('mutation', 'updateManyUsers', args, {}, info),
+    updateManyRoles: (args, info): Promise<BatchPayload> => super.delegate('mutation', 'updateManyRoles', args, {}, info),
     deleteManyPosts: (args, info): Promise<BatchPayload> => super.delegate('mutation', 'deleteManyPosts', args, {}, info),
-    deleteManyUsers: (args, info): Promise<BatchPayload> => super.delegate('mutation', 'deleteManyUsers', args, {}, info)
+    deleteManyUsers: (args, info): Promise<BatchPayload> => super.delegate('mutation', 'deleteManyUsers', args, {}, info),
+    deleteManyRoles: (args, info): Promise<BatchPayload> => super.delegate('mutation', 'deleteManyRoles', args, {}, info)
   }
 
   subscription: Subscription = {
     post: (args, infoOrQuery): Promise<AsyncIterator<PostSubscriptionPayload>> => super.delegateSubscription('post', args, {}, infoOrQuery),
-    user: (args, infoOrQuery): Promise<AsyncIterator<UserSubscriptionPayload>> => super.delegateSubscription('user', args, {}, infoOrQuery)
+    user: (args, infoOrQuery): Promise<AsyncIterator<UserSubscriptionPayload>> => super.delegateSubscription('user', args, {}, infoOrQuery),
+    role: (args, infoOrQuery): Promise<AsyncIterator<RoleSubscriptionPayload>> => super.delegateSubscription('role', args, {}, infoOrQuery)
   }
 }

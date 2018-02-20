@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcryptjs'
 import * as jwt from 'jsonwebtoken'
+import * as R from 'ramda'
 import { Context } from '../../utils'
 import { Scope, Auth } from '../../Auth'
 import { User } from '../../generated/prisma'
@@ -10,7 +11,10 @@ const userQuery = `
       name
       email
       password
-      roles
+      roles {
+        name
+        scopes
+      }
     }
   }
 `
@@ -25,11 +29,12 @@ export const auth = {
   async signup(parent, args, ctx: Context, info) {
     const password = await bcrypt.hash(args.password, 10)
     let user = await ctx.db.mutation.createUser({
-      data: { ...args,roles:{set:"USER"}, password },
+      data: { ...args,roles:{connect:{name:"USER"}}, password },
     })
     user = await queryUserByMail(ctx,user.email)
+    const scopes = [].concat.apply([],user.roles.map(r => r.scopes));
     return {
-      token: Auth.getToken(user),
+      token: Auth.getToken(user,scopes),
       user,
     }
   },
@@ -44,9 +49,8 @@ export const auth = {
       throw new Error('Invalid password')
     }
 
-    const userScopes = ['user','feed','drafts'];
-    const adminScopes = userScopes.concat(['users']);
-    const allowedScopes = user.roles.includes('ADMIN') ? adminScopes : userScopes;
+    const allowedScopes = R.uniq(R.flatten(user.roles.map(r => r.scopes)));
+    console.log(allowedScopes);
     // TODO get allowed scopes from db user/roles
     let requestedScopes : Scope[] = scopes || allowedScopes;
     const validScopes = requestedScopes.map((scope) => {

@@ -21,7 +21,7 @@ type User implements Node {
   password: String!
   name: String!
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
-  roles: [Role!]
+  roles(where: RoleWhereInput, orderBy: RoleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Role!]
 }
 
 
@@ -30,6 +30,10 @@ type User implements Node {
 #
 
 type AggregatePost {
+  count: Int!
+}
+
+type AggregateRole {
   count: Int!
 }
 
@@ -48,16 +52,22 @@ scalar Long
 type Mutation {
   createPost(data: PostCreateInput!): Post!
   createUser(data: UserCreateInput!): User!
+  createRole(data: RoleCreateInput!): Role!
   updatePost(data: PostUpdateInput!, where: PostWhereUniqueInput!): Post
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updateRole(data: RoleUpdateInput!, where: RoleWhereUniqueInput!): Role
   deletePost(where: PostWhereUniqueInput!): Post
   deleteUser(where: UserWhereUniqueInput!): User
+  deleteRole(where: RoleWhereUniqueInput!): Role
   upsertPost(where: PostWhereUniqueInput!, create: PostCreateInput!, update: PostUpdateInput!): Post!
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  upsertRole(where: RoleWhereUniqueInput!, create: RoleCreateInput!, update: RoleUpdateInput!): Role!
   updateManyPosts(data: PostUpdateInput!, where: PostWhereInput!): BatchPayload!
   updateManyUsers(data: UserUpdateInput!, where: UserWhereInput!): BatchPayload!
+  updateManyRoles(data: RoleUpdateInput!, where: RoleWhereInput!): BatchPayload!
   deleteManyPosts(where: PostWhereInput!): BatchPayload!
   deleteManyUsers(where: UserWhereInput!): BatchPayload!
+  deleteManyRoles(where: RoleWhereInput!): BatchPayload!
 }
 
 enum MutationType {
@@ -253,21 +263,140 @@ input PostWhereUniqueInput {
 type Query {
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  roles(where: RoleWhereInput, orderBy: RoleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Role]!
   post(where: PostWhereUniqueInput!): Post
   user(where: UserWhereUniqueInput!): User
+  role(where: RoleWhereUniqueInput!): Role
   postsConnection(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PostConnection!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  rolesConnection(where: RoleWhereInput, orderBy: RoleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): RoleConnection!
   node(id: ID!): Node
 }
 
-enum Role {
-  ADMIN
-  USER
+type Role {
+  name: String!
+  scopes: [String!]
+}
+
+type RoleConnection {
+  pageInfo: PageInfo!
+  edges: [RoleEdge]!
+  aggregate: AggregateRole!
+}
+
+input RoleCreateInput {
+  name: String!
+  scopes: RoleCreatescopesInput
+}
+
+input RoleCreateManyInput {
+  create: [RoleCreateInput!]
+  connect: [RoleWhereUniqueInput!]
+}
+
+input RoleCreatescopesInput {
+  set: [String!]
+}
+
+type RoleEdge {
+  node: Role!
+  cursor: String!
+}
+
+enum RoleOrderByInput {
+  name_ASC
+  name_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type RolePreviousValues {
+  name: String!
+  scopes: [String!]
+}
+
+type RoleSubscriptionPayload {
+  mutation: MutationType!
+  node: Role
+  updatedFields: [String!]
+  previousValues: RolePreviousValues
+}
+
+input RoleSubscriptionWhereInput {
+  AND: [RoleSubscriptionWhereInput!]
+  OR: [RoleSubscriptionWhereInput!]
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: RoleWhereInput
+}
+
+input RoleUpdateDataInput {
+  name: String
+  scopes: RoleUpdatescopesInput
+}
+
+input RoleUpdateInput {
+  name: String
+  scopes: RoleUpdatescopesInput
+}
+
+input RoleUpdateManyInput {
+  create: [RoleCreateInput!]
+  connect: [RoleWhereUniqueInput!]
+  disconnect: [RoleWhereUniqueInput!]
+  delete: [RoleWhereUniqueInput!]
+  update: [RoleUpdateNestedInput!]
+  upsert: [RoleUpsertNestedInput!]
+}
+
+input RoleUpdateNestedInput {
+  where: RoleWhereUniqueInput!
+  data: RoleUpdateDataInput!
+}
+
+input RoleUpdatescopesInput {
+  set: [String!]
+}
+
+input RoleUpsertNestedInput {
+  where: RoleWhereUniqueInput!
+  update: RoleUpdateDataInput!
+  create: RoleCreateInput!
+}
+
+input RoleWhereInput {
+  AND: [RoleWhereInput!]
+  OR: [RoleWhereInput!]
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+}
+
+input RoleWhereUniqueInput {
+  name: String
 }
 
 type Subscription {
   post(where: PostSubscriptionWhereInput): PostSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  role(where: RoleSubscriptionWhereInput): RoleSubscriptionPayload
 }
 
 type UserConnection {
@@ -280,8 +409,8 @@ input UserCreateInput {
   email: String!
   password: String!
   name: String!
-  roles: UserCreaterolesInput
   posts: PostCreateManyWithoutAuthorInput
+  roles: RoleCreateManyInput
 }
 
 input UserCreateOneWithoutPostsInput {
@@ -289,15 +418,11 @@ input UserCreateOneWithoutPostsInput {
   connect: UserWhereUniqueInput
 }
 
-input UserCreaterolesInput {
-  set: [Role!]
-}
-
 input UserCreateWithoutPostsInput {
   email: String!
   password: String!
   name: String!
-  roles: UserCreaterolesInput
+  roles: RoleCreateManyInput
 }
 
 type UserEdge {
@@ -325,7 +450,6 @@ type UserPreviousValues {
   email: String!
   password: String!
   name: String!
-  roles: [Role!]
 }
 
 type UserSubscriptionPayload {
@@ -349,8 +473,8 @@ input UserUpdateInput {
   email: String
   password: String
   name: String
-  roles: UserUpdaterolesInput
   posts: PostUpdateManyWithoutAuthorInput
+  roles: RoleUpdateManyInput
 }
 
 input UserUpdateOneWithoutPostsInput {
@@ -362,15 +486,11 @@ input UserUpdateOneWithoutPostsInput {
   upsert: UserUpsertWithoutPostsInput
 }
 
-input UserUpdaterolesInput {
-  set: [Role!]
-}
-
 input UserUpdateWithoutPostsDataInput {
   email: String
   password: String
   name: String
-  roles: UserUpdaterolesInput
+  roles: RoleUpdateManyInput
 }
 
 input UserUpdateWithoutPostsInput {
@@ -446,6 +566,9 @@ input UserWhereInput {
   posts_every: PostWhereInput
   posts_some: PostWhereInput
   posts_none: PostWhereInput
+  roles_every: RoleWhereInput
+  roles_some: RoleWhereInput
+  roles_none: RoleWhereInput
 }
 
 input UserWhereUniqueInput {
