@@ -5,8 +5,8 @@ import { ContextParameters } from "graphql-yoga/dist/src/types";
 
 export interface AuthUser {
     id: ID_Output
-    email: String
-    name: String
+    email: string
+    name: string
     roles?: Role[]
     scopes?: Scope[]
 }
@@ -73,7 +73,7 @@ export class Auth {
         return user.id;
     }
 
-    static getToken(user: User, scopes?: Scope[]) {
+    static getToken(user: User, scopes?: Scope[]) : string {
         return jwt.sign({ 
             id: user.id,
             name: user.name,
