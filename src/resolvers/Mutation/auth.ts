@@ -32,7 +32,7 @@ export const auth = {
       data: { ...args,roles:{connect:{name:"USER"}}, password },
     })
     user = await queryUserByMail(ctx,user.email)
-    const scopes = [].concat.apply([],user.roles.map(r => r.scopes));
+    const scopes = R.uniq(R.flatten(user.roles.map(r => r.scopes)));
     return {
       token: Auth.getToken(user,scopes),
       user,
@@ -50,8 +50,6 @@ export const auth = {
     }
 
     const allowedScopes = R.uniq(R.flatten(user.roles.map(r => r.scopes)));
-    console.log(allowedScopes);
-    // TODO get allowed scopes from db user/roles
     let requestedScopes : Scope[] = scopes || allowedScopes;
     const validScopes = requestedScopes.map((scope) => {
         if(!allowedScopes.includes(scope)){
