@@ -80,6 +80,8 @@ export class Auth {
             email: user.email,
             scopes: scopes 
         }, 
-        process.env.APP_SECRET)
+        process.env.APP_SECRET,{
+            expiresIn: 60 * 60,
+        })
     }
 };
