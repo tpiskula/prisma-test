@@ -8,6 +8,9 @@
 
 Based on https://github.com/graphql-boilerplates/typescript-graphql-server/tree/master/advanced
 
+## Why
+This repo is an experiment for testing purposes and not actively mantained, feel free to look around to see my solution to scope based auth using JWT and a custom graphql directive
+
 ## Requirements
 
 You need to have the [Prisma CLI](https://www.prismagraphql.com/docs/quickstart/) installed to bootstrap your Prisma database using `prisma deploy`:
