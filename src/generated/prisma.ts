@@ -346,8 +346,8 @@ input RoleUpdateDataInput {
 }
 
 input RoleUpdateInput {
-  name: String
-  scopes: RoleUpdatescopesInput
+  where: RoleWhereUniqueInput!
+  data: RoleUpdateDataInput!
 }
 
 input RoleUpdateManyInput {
@@ -355,20 +355,15 @@ input RoleUpdateManyInput {
   connect: [RoleWhereUniqueInput!]
   disconnect: [RoleWhereUniqueInput!]
   delete: [RoleWhereUniqueInput!]
-  update: [RoleUpdateNestedInput!]
-  upsert: [RoleUpsertNestedInput!]
-}
-
-input RoleUpdateNestedInput {
-  where: RoleWhereUniqueInput!
-  data: RoleUpdateDataInput!
+  update: [RoleUpdateInput!]
+  upsert: [RoleUpsertInput!]
 }
 
 input RoleUpdatescopesInput {
   set: [String!]
 }
 
-input RoleUpsertNestedInput {
+input RoleUpsertInput {
   where: RoleWhereUniqueInput!
   update: RoleUpdateDataInput!
   create: RoleCreateInput!
@@ -719,19 +714,22 @@ export interface RoleWhereInput {
   name_not_ends_with?: String
 }
 
-export interface RoleUpsertNestedInput {
-  where: RoleWhereUniqueInput
-  update: RoleUpdateDataInput
-  create: RoleCreateInput
-}
-
-export interface UserUpdateWithoutPostsInput {
-  where: UserWhereUniqueInput
-  data: UserUpdateWithoutPostsDataInput
-}
-
 export interface RoleUpdatescopesInput {
   set?: String[] | String
+}
+
+export interface UserUpdateOneWithoutPostsInput {
+  create?: UserCreateWithoutPostsInput
+  connect?: UserWhereUniqueInput
+  disconnect?: UserWhereUniqueInput
+  delete?: UserWhereUniqueInput
+  update?: UserUpdateWithoutPostsInput
+  upsert?: UserUpsertWithoutPostsInput
+}
+
+export interface RoleUpdateDataInput {
+  name?: String
+  scopes?: RoleUpdatescopesInput
 }
 
 export interface PostCreateWithoutAuthorInput {
@@ -740,9 +738,9 @@ export interface PostCreateWithoutAuthorInput {
   text: String
 }
 
-export interface RoleUpdateDataInput {
-  name?: String
-  scopes?: RoleUpdatescopesInput
+export interface RoleUpdateInput {
+  where: RoleWhereUniqueInput
+  data: RoleUpdateDataInput
 }
 
 export interface RoleSubscriptionWhereInput {
@@ -755,9 +753,13 @@ export interface RoleSubscriptionWhereInput {
   node?: RoleWhereInput
 }
 
-export interface RoleUpdateNestedInput {
-  where: RoleWhereUniqueInput
-  data: RoleUpdateDataInput
+export interface RoleUpdateManyInput {
+  create?: RoleCreateInput[] | RoleCreateInput
+  connect?: RoleWhereUniqueInput[] | RoleWhereUniqueInput
+  disconnect?: RoleWhereUniqueInput[] | RoleWhereUniqueInput
+  delete?: RoleWhereUniqueInput[] | RoleWhereUniqueInput
+  update?: RoleUpdateInput[] | RoleUpdateInput
+  upsert?: RoleUpsertInput[] | RoleUpsertInput
 }
 
 export interface PostSubscriptionWhereInput {
@@ -797,10 +799,9 @@ export interface UserCreateWithoutPostsInput {
   roles?: RoleCreateManyInput
 }
 
-export interface PostUpdateWithoutAuthorDataInput {
-  isPublished?: Boolean
-  title?: String
-  text?: String
+export interface PostUpdateWithoutAuthorInput {
+  where: PostWhereUniqueInput
+  data: PostUpdateWithoutAuthorDataInput
 }
 
 export interface RoleCreateManyInput {
@@ -808,28 +809,25 @@ export interface RoleCreateManyInput {
   connect?: RoleWhereUniqueInput[] | RoleWhereUniqueInput
 }
 
-export interface PostUpdateManyWithoutAuthorInput {
-  create?: PostCreateWithoutAuthorInput[] | PostCreateWithoutAuthorInput
-  connect?: PostWhereUniqueInput[] | PostWhereUniqueInput
-  disconnect?: PostWhereUniqueInput[] | PostWhereUniqueInput
-  delete?: PostWhereUniqueInput[] | PostWhereUniqueInput
-  update?: PostUpdateWithoutAuthorInput[] | PostUpdateWithoutAuthorInput
-  upsert?: PostUpsertWithoutAuthorInput[] | PostUpsertWithoutAuthorInput
+export interface UserUpdateInput {
+  email?: String
+  password?: String
+  name?: String
+  posts?: PostUpdateManyWithoutAuthorInput
+  roles?: RoleUpdateManyInput
 }
 
-export interface RoleUpdateManyInput {
-  create?: RoleCreateInput[] | RoleCreateInput
-  connect?: RoleWhereUniqueInput[] | RoleWhereUniqueInput
-  disconnect?: RoleWhereUniqueInput[] | RoleWhereUniqueInput
-  delete?: RoleWhereUniqueInput[] | RoleWhereUniqueInput
-  update?: RoleUpdateNestedInput[] | RoleUpdateNestedInput
-  upsert?: RoleUpsertNestedInput[] | RoleUpsertNestedInput
+export interface UserUpdateWithoutPostsDataInput {
+  email?: String
+  password?: String
+  name?: String
+  roles?: RoleUpdateManyInput
 }
 
-export interface UserUpsertWithoutPostsInput {
-  where: UserWhereUniqueInput
-  update: UserUpdateWithoutPostsDataInput
-  create: UserCreateWithoutPostsInput
+export interface RoleUpsertInput {
+  where: RoleWhereUniqueInput
+  update: RoleUpdateDataInput
+  create: RoleCreateInput
 }
 
 export interface RoleCreatescopesInput {
@@ -846,31 +844,9 @@ export interface UserSubscriptionWhereInput {
   node?: UserWhereInput
 }
 
-export interface UserCreateInput {
-  email: String
-  password: String
-  name: String
-  posts?: PostCreateManyWithoutAuthorInput
-  roles?: RoleCreateManyInput
-}
-
 export interface UserWhereUniqueInput {
   id?: ID_Input
   email?: String
-}
-
-export interface PostUpdateWithoutAuthorInput {
-  where: PostWhereUniqueInput
-  data: PostUpdateWithoutAuthorDataInput
-}
-
-export interface UserUpdateOneWithoutPostsInput {
-  create?: UserCreateWithoutPostsInput
-  connect?: UserWhereUniqueInput
-  disconnect?: UserWhereUniqueInput
-  delete?: UserWhereUniqueInput
-  update?: UserUpdateWithoutPostsInput
-  upsert?: UserUpsertWithoutPostsInput
 }
 
 export interface PostUpdateInput {
@@ -880,11 +856,9 @@ export interface PostUpdateInput {
   author?: UserUpdateOneWithoutPostsInput
 }
 
-export interface UserUpdateWithoutPostsDataInput {
-  email?: String
-  password?: String
-  name?: String
-  roles?: RoleUpdateManyInput
+export interface UserUpdateWithoutPostsInput {
+  where: UserWhereUniqueInput
+  data: UserUpdateWithoutPostsDataInput
 }
 
 export interface UserWhereInput {
@@ -954,12 +928,18 @@ export interface UserWhereInput {
   roles_none?: RoleWhereInput
 }
 
-export interface UserUpdateInput {
-  email?: String
-  password?: String
-  name?: String
-  posts?: PostUpdateManyWithoutAuthorInput
-  roles?: RoleUpdateManyInput
+export interface UserCreateInput {
+  email: String
+  password: String
+  name: String
+  posts?: PostCreateManyWithoutAuthorInput
+  roles?: RoleCreateManyInput
+}
+
+export interface PostUpdateWithoutAuthorDataInput {
+  isPublished?: Boolean
+  title?: String
+  text?: String
 }
 
 export interface PostUpsertWithoutAuthorInput {
@@ -968,9 +948,19 @@ export interface PostUpsertWithoutAuthorInput {
   create: PostCreateWithoutAuthorInput
 }
 
-export interface RoleUpdateInput {
-  name?: String
-  scopes?: RoleUpdatescopesInput
+export interface UserUpsertWithoutPostsInput {
+  where: UserWhereUniqueInput
+  update: UserUpdateWithoutPostsDataInput
+  create: UserCreateWithoutPostsInput
+}
+
+export interface PostUpdateManyWithoutAuthorInput {
+  create?: PostCreateWithoutAuthorInput[] | PostCreateWithoutAuthorInput
+  connect?: PostWhereUniqueInput[] | PostWhereUniqueInput
+  disconnect?: PostWhereUniqueInput[] | PostWhereUniqueInput
+  delete?: PostWhereUniqueInput[] | PostWhereUniqueInput
+  update?: PostUpdateWithoutAuthorInput[] | PostUpdateWithoutAuthorInput
+  upsert?: PostUpsertWithoutAuthorInput[] | PostUpsertWithoutAuthorInput
 }
 
 export interface Node {

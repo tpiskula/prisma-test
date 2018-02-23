@@ -342,8 +342,8 @@ input RoleUpdateDataInput {
 }
 
 input RoleUpdateInput {
-  name: String
-  scopes: RoleUpdatescopesInput
+  where: RoleWhereUniqueInput!
+  data: RoleUpdateDataInput!
 }
 
 input RoleUpdateManyInput {
@@ -351,20 +351,15 @@ input RoleUpdateManyInput {
   connect: [RoleWhereUniqueInput!]
   disconnect: [RoleWhereUniqueInput!]
   delete: [RoleWhereUniqueInput!]
-  update: [RoleUpdateNestedInput!]
-  upsert: [RoleUpsertNestedInput!]
-}
-
-input RoleUpdateNestedInput {
-  where: RoleWhereUniqueInput!
-  data: RoleUpdateDataInput!
+  update: [RoleUpdateInput!]
+  upsert: [RoleUpsertInput!]
 }
 
 input RoleUpdatescopesInput {
   set: [String!]
 }
 
-input RoleUpsertNestedInput {
+input RoleUpsertInput {
   where: RoleWhereUniqueInput!
   update: RoleUpdateDataInput!
   create: RoleCreateInput!
