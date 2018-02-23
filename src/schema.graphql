@@ -20,11 +20,11 @@ type Mutation {
   signup(email: String!, password: String!, name: String!): AuthPayload!
   login(email: String!, password: String!, scopes: [String]): AuthPayload!
   "scope: post"
-  createDraft(title: String!, text: String!): Post!
+  createDraft(title: String!, text: String!): Post! @auth(scopes: ["post"])
   "scope: post"
-  publish(id: ID!): Post!
+  publish(id: ID!): Post! @auth(scopes: ["post"])
   "scope: post"
-  deletePost(id: ID!): Post!
+  deletePost(id: ID!): Post! @auth(scopes: ["post"])
 }
 
 type AuthPayload {
