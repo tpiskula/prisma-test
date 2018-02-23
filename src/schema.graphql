@@ -1,17 +1,19 @@
 # import Post from "./generated/prisma.graphql"
 # import Role from "./generated/prisma.graphql"
 
+directive @auth(scopes: [String]) on FIELD_DEFINITION
+
 type Query {
   "scope: feed"
-  feed(orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
+  feed(orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]! @auth(scopes: ["feed"])
   "scope: drafts"
-  drafts(orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
+  drafts(orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]! @auth(scopes: ["drafts"])
   "scope: post"
-  post(id: ID!): Post!
+  post(id: ID!): Post! @auth(scopes: ["post"])
   "scope: user"
-  me: User
+  me: User @auth(scopes: ["user"])
   "scope: users"
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]! @auth(scopes: ["users"])
 }
 
 type Mutation {

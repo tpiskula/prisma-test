@@ -68,6 +68,15 @@ export class Auth {
         return user.id;
     }
 
+    checkScopes(scopes: [Scope]) : ID_Output {
+        const user = this.getUser()
+        if(!scopes.some(sc => user.scopes.includes(sc)))
+        {
+            throw new AuthError()
+        }
+        return user.id;
+    }
+
     static getToken(user: User, scopes?: Scope[]) : string {
         return jwt.sign({ 
             id: user.id,

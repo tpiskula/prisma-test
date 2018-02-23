@@ -2,10 +2,24 @@ import { GraphQLServer } from 'graphql-yoga'
 import { Prisma } from './generated/prisma'
 import resolvers from './resolvers'
 import { Auth } from './Auth';
+import { Context } from './utils'
+
+const directiveResolvers = {
+  auth(next, src, args, context: Context) {
+    const expectedScopes = args.scopes || [];
+    if (
+      context.auth.checkScopes(expectedScopes)
+    ) {
+      // Call next to continues process resolver.
+      return next()
+    }
+  }
+};
 
 const server = new GraphQLServer({
   typeDefs: './src/schema.graphql',
   resolvers,
+  directiveResolvers,
   context: req => ({
     ...req,
     db: new Prisma({
